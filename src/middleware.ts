@@ -15,9 +15,14 @@ export function middleware(request: NextRequest) {
   }
 
   // Redirect to default locale if the detected locale is not supported
+  // Only redirect if we're not already on a valid locale path
   const redirectUrl = request.nextUrl.clone();
-  redirectUrl.pathname = `/${DEFAULT_LOCALE}${pathname}`;
-  return NextResponse.redirect(redirectUrl);
+  if (!pathname.startsWith(`/${DEFAULT_LOCALE}/`) && pathname !== `/${DEFAULT_LOCALE}`) {
+    // Prepend the default locale to the pathname
+    redirectUrl.pathname = `/${DEFAULT_LOCALE}${pathname}`;
+    return NextResponse.redirect(redirectUrl);
+  }
+  return NextResponse.next();
 }
 
 export const config = {
